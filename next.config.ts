@@ -1,10 +1,16 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // Pin the workspace root: an unrelated lockfile higher up the local tree
+  // (C:\Users\David) would otherwise make Turbopack infer the wrong root.
   turbopack: {
+    root: projectRoot,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],
@@ -12,6 +18,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  outputFileTracingRoot: projectRoot,
 };
 
 export default nextConfig;
