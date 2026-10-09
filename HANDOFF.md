@@ -64,16 +64,14 @@ All constants live in `src/lib/site.ts`.
    ```
 2. **Import to Vercel** (or connect the repo). Framework preset: Next.js. No env
    vars required.
-3. **Google Search Console** — the property is a **Domain property**, which
-   verifies by **DNS TXT only** (HTML file/tag are URL-prefix-property methods).
-   Recommended: add the `google-site-verification=…` TXT record to DNS and click
-   Verify (no code change needed). Alternatively, add a second **URL-prefix**
-   property (`https://www.365residentialservices.com/`) and send me the HTML
-   file or meta tag token — I'll ship it. Do **not** use the GA verification
-   method: GA4 is consent-gated, so the tag check would fail.
-4. **DNS cutover** — point the domain to Vercel when asked. Apex must redirect
-   to `https://www` (the current live setup redirects to plain `http://www`,
-   which should be corrected to HTTPS during cutover).
+3. **Google Search Console** — ✅ **done**: Domain property verified via DNS TXT,
+   URL inspected. Remaining: submit
+   `https://www.365residentialservices.com/sitemap.xml` and request indexing of
+   the homepage. (Do **not** use the GA verification method: GA4 is
+   consent-gated, so the tag check would fail.)
+4. **DNS cutover** — ✅ **done**: domain now resolves to Vercel and apex does
+   `308 → https://www`. (The old live setup redirected to plain `http://www`;
+   that is corrected.)
 5. **Microsoft Clarity / GA4** — no action; existing IDs are reused.
 6. **Google Business Profile** — currently none. If one is created later, send
    the official NAP + categories so the LocalBusiness schema can be aligned.
@@ -90,6 +88,29 @@ All constants live in `src/lib/site.ts`.
 | Unique titles + canonicals per page | ✅ |
 | Consent matrix (fresh/accept/decline/returning/SPA) | ✅ |
 | Lead POST payload (intercepted, not sent) | ✅ exact contract |
+
+## Production cutover — verified on `https://www.365residentialservices.com`
+
+DNS cut over to Vercel (authoritative NS: Namecheap). Full production smoke
+test passed on the live domain:
+
+| Check | Result |
+|---|---|
+| `https://www` | 200, `Server: Vercel`, valid TLS |
+| `http://www` → `https://www` | 308 |
+| Apex → `https://www` | 308 (the old `→ http://www` redirect bug is fixed) |
+| All routes / 404 | ✅ |
+| sitemap (15 URLs), robots, llms.txt, og-image, manifest, favicon | ✅ 200 |
+| Canonicals + OG image | ✅ production host |
+| JSON-LD on `/` | Org, WebSite, HomeAndConstructionBusiness, FAQPage, WebPage, BreadcrumbList, Service |
+| Consent matrix (live): fresh / Accept All / Decline / returning / SPA | ✅ (arguments-only dataLayer, single `page_view`, correct `page_title`) |
+| Lead form → `…/public/lead_v3` | ✅ exact contract + `knowledge_profile_id` returned |
+
+> Test artifact: one verification lead was submitted during the live test
+> (`OpenCode Test`, `opencode-test@example.com`, Dallas). Ignore/delete it in the
+> lead backend.
+
+**Done by client:** GSC Domain property verified (DNS TXT) and URL inspected ✅.
 
 ## Notes
 
