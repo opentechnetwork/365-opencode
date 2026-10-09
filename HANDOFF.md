@@ -64,9 +64,13 @@ All constants live in `src/lib/site.ts`.
    ```
 2. **Import to Vercel** (or connect the repo). Framework preset: Next.js. No env
    vars required.
-3. **Google Search Console** — create the property for the domain, choose the
-   **HTML file** verification method, and send me the token file name (e.g.
-   `google1234abcd.html`). I'll add it to `public/` before the domain cutover.
+3. **Google Search Console** — the property is a **Domain property**, which
+   verifies by **DNS TXT only** (HTML file/tag are URL-prefix-property methods).
+   Recommended: add the `google-site-verification=…` TXT record to DNS and click
+   Verify (no code change needed). Alternatively, add a second **URL-prefix**
+   property (`https://www.365residentialservices.com/`) and send me the HTML
+   file or meta tag token — I'll ship it. Do **not** use the GA verification
+   method: GA4 is consent-gated, so the tag check would fail.
 4. **DNS cutover** — point the domain to Vercel when asked. Apex must redirect
    to `https://www` (the current live setup redirects to plain `http://www`,
    which should be corrected to HTTPS during cutover).
