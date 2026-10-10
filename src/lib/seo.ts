@@ -25,14 +25,20 @@ export function pageSeo({
   noIndex,
 }: PageSeoArgs): Metadata {
   const url = `${SITE_URL}${path === "/" ? "" : path}`;
+  // Some titles (home, area pages) already carry the brand suffix for parity
+  // with the live site — never append it twice. `absolute` bypasses the layout
+  // title template so <title>, og:title and twitter:title always match exactly.
+  const brandedTitle = title.includes(SITE_NAME)
+    ? title
+    : `${title} | ${SITE_NAME}`;
   return {
-    title,
+    title: { absolute: brandedTitle },
     description,
     keywords,
     alternates: { canonical: url },
     robots: noIndex ? { index: false, follow: false } : undefined,
     openGraph: {
-      title: `${title} | ${SITE_NAME}`,
+      title: brandedTitle,
       description,
       url,
       siteName: SITE_NAME,
@@ -42,7 +48,7 @@ export function pageSeo({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | ${SITE_NAME}`,
+      title: brandedTitle,
       description,
       images: [OgImagePath],
     },
